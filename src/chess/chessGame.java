@@ -129,6 +129,7 @@ class GamePanel extends JPanel implements java.awt.event.MouseListener,java.awt.
 
             this.repaint();
             if (game.isEndGame()) {
+                new SoundWavePlay("src/chess/sound/complete.wav").start();
                 if (game.isUpWin()) {
                     JOptionPane.showMessageDialog(null, "黑方获胜！", "游戏结束", JOptionPane.INFORMATION_MESSAGE);
                 } else {
@@ -170,7 +171,6 @@ class GamePanel extends JPanel implements java.awt.event.MouseListener,java.awt.
 
         printPreSelectX = (e.getX() - 3) / 85;
         printPreSelectY = (e.getY() - 20) / 78;
-        System.out.println(printPreSelectX + ","+ printPreSelectY + "   " + e.getX() + "," + e.getY());
         printPreSelect = printPreSelectX <= 8 && printPreSelectY <= 9;
         this.repaint();
     }
@@ -319,7 +319,9 @@ class GamePanel extends JPanel implements java.awt.event.MouseListener,java.awt.
             System.out.println("游戏开始！");
         }
         private boolean moveOnce(chessman chessman, Point dst){
-            if(!moveWithNoBar(chessman,dst))return false;
+            if(!moveWithNoBar(chessman,dst)){
+                return false;
+            }
             if(upTurn){
                 if(checkOwnChessmanOnPoint(player.UP,dst)>=0)
                     return false;
@@ -390,7 +392,8 @@ class GamePanel extends JPanel implements java.awt.event.MouseListener,java.awt.
                         status = operationStatus.UNSELECTED;
                         upTurn = !upTurn;
                         operationChessman = null;
-
+                    }else{
+                        new SoundWavePlay("src/chess/sound/cannotMove.wav").start();
                     }
                     break;
                 case UNSELECTED:
@@ -403,7 +406,7 @@ class GamePanel extends JPanel implements java.awt.event.MouseListener,java.awt.
                             operationChessman = downChessman.elementAt(selectedChess);
                         }
                         status = operationStatus.SELECTED;
-                        new SoundWavePlay("src/chess/sound/move.wav").start();
+                        new SoundWavePlay("src/chess/sound/unselect.wav").start();
                     }
                     break;
                 default:
@@ -438,6 +441,7 @@ class GamePanel extends JPanel implements java.awt.event.MouseListener,java.awt.
                     operation(pnt);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    break;
                 } finally {
                     lock.unlock();
                 }
@@ -487,27 +491,21 @@ class SoundWavePlay extends Thread{
 
     public void run() {
         File soundFile = new File(filename);
-        AudioInputStream audioInputStream = null;
+        AudioInputStream audioInputStream;
         try {
             audioInputStream = AudioSystem.getAudioInputStream(soundFile);
-        } catch (UnsupportedAudioFileException e1) {
-            e1.printStackTrace();
-            return;
-        } catch (IOException e1) {
+        } catch (UnsupportedAudioFileException | IOException e1) {
             e1.printStackTrace();
             return;
         }
 
         AudioFormat format = audioInputStream.getFormat();
-        SourceDataLine auline = null;
+        SourceDataLine auline;
         DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
 
         try {
             auline = (SourceDataLine) AudioSystem.getLine(info);
             auline.open(format);
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-            return;
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -525,7 +523,6 @@ class SoundWavePlay extends Thread{
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return;
         } finally {
             auline.drain();
             auline.close();
