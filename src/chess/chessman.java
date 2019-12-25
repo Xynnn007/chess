@@ -61,7 +61,7 @@ public class chessman {
         return this.position.y == p.y;
     }
     private boolean horseMove(Point p){
-        return Math.abs(p.x - this.position.x) == 1 && Math.abs(p.y - this.position.y) == 2 || p.x - this.position.x == 2 && Math.abs(p.y - this.position.y) == 1;
+        return (Math.abs(p.x - this.position.x) == 1 && Math.abs(p.y - this.position.y) == 2 )||( Math.abs(p.x - this.position.x) == 2 && Math.abs(p.y - this.position.y) == 1);
     }
     //设置位置
     //需要一个检查能否移动的函数

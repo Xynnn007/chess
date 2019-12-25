@@ -64,10 +64,10 @@ public class chessBoard {
         return false;
     }
     public boolean horseWithNoBar(Point src, Point dst){
-        if(dst.x - src.x == 2 && !position[src.x+1][src.y] )return true;
-        if(src.x - dst.x == 2 && !position[src.x-1][src.y] )return true;
-        if(dst.y - src.y == 2 && !position[src.x][src.y+1] )return true;
-        return src.y - dst.y == 2 && !position[src.x][src.y - 1];
+        if(dst.x - src.x == 2 )return !position[src.x+1][src.y];
+        if(src.x - dst.x == 2 )return !position[src.x-1][src.y];
+        if(dst.y - src.y == 2 )return !position[src.x][src.y+1];
+        return !position[src.x][src.y - 1];
     }
     public boolean elephantWithNoBar(Point src, Point dst){
         return !position[(src.x + dst.x) / 2][(src.y + dst.y) / 2];
